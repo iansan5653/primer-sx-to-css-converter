@@ -13,7 +13,7 @@
 
 <body>
   <h1>SX to CSS Converter</h1>
-    
+
   <div class="formcontrol">
     <label for="input">Input SX Object</label>
     <textarea id="input" aria-describedby="description" autofocus placeholder="Paste a JavaScript object"></textarea>
@@ -27,9 +27,9 @@
   <article id="description">
     <h2>Instructions</h2>
 
-    <p>Paste TypeScript objects from Primer <code>sx</code> and get plain CSS, ready for use in CSS
-      modules. The result will get you <em>most</em> of the way there, but some manual work may still be required for
-      complex cases.</p>
+    <p>Paste TypeScript objects from <a href="https://primer.style/">Primer</a> <code>sx</code> props and get plain CSS,
+      ready for use in CSS modules. The result will get you <em>most</em> of the way there, but some manual work may
+      still be required for complex cases.</p>
 
     <ul>
       <li>Supported features
@@ -38,7 +38,8 @@
           <li>Converts camelCase rule names to kebab-case</li>
           <li>Removes quotation marks around strings</li>
           <li>Replaces shorthand property names with full CSS property names</li>
-          <li>Replaces theme keywords with Primer CSS variables</li>
+          <li>Replaces <a href="https://primer.style/foundations/primitives/migrating">theme keywords with Primer CSS
+              variables</a></li>
           <li>Converts nested objects to <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_nesting">CSS
               Nesting</a></li>
           <li>Converts responsive value arrays to nested <code>@media</code> queries</li>
