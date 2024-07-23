@@ -81,10 +81,9 @@ function* arrayToResponsiveCSS(
         `Unknown breakpoint for "${responsiveValue}" in "${ruleName}" rule`
       );
 
-    yield new css.Query(
-      `@media screen and (min-width: ${breakpoint})`,
-      new css.Block([new css.Rule(ruleName, responsiveValue)])
-    );
+    yield new css.Block(`@media screen and (min-width: ${breakpoint})`, [
+      new css.Rule(ruleName, responsiveValue),
+    ]);
   }
 }
 
@@ -108,7 +107,10 @@ function* propertyToCSSRules(
         );
       } else if (ts.isObjectLiteralExpression(value)) {
         // nested rule, ie ":hover"
-        yield new css.Rule(ruleName, objectToCSSBlock(value));
+        yield new css.Block(
+          ruleName,
+          Array.from(propertiesToCSSRules(value.properties))
+        );
       } else if (ts.isArrayLiteralExpression(value)) {
         // responsive value, becomes nested at-rule
         yield* arrayToResponsiveCSS(ruleName, value);
@@ -131,10 +133,6 @@ function* propertiesToCSSRules(
   for (const property of properties) yield* propertyToCSSRules(property);
 }
 
-function objectToCSSBlock(object: ts.ObjectLiteralExpression) {
-  return new css.Block(Array.from(propertiesToCSSRules(object.properties)));
-}
-
 inputElement.addEventListener("input", () => {
   const inputTs = `const x = ${inputElement.value}`;
 
@@ -149,5 +147,7 @@ inputElement.addEventListener("input", () => {
     outputElement.textContent = "Error: Input must be an object";
     return;
   }
-  outputElement.textContent = objectToCSSBlock(objectExpression).toString();
+  outputElement.textContent = Array.from(
+    propertiesToCSSRules(objectExpression.properties)
+  ).join("\n");
 });
