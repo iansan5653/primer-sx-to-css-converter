@@ -12,6 +12,7 @@
   },
   "scripts": {
     "build": "webpack",
+    "build-pages": "npm run build && rm -rf node_modules && rm -rf src",
     "start": "concurrently \"webpack --watch\" \"live-server --ignore=src/**\""
   }
 }
