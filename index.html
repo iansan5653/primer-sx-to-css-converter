@@ -14,13 +14,41 @@
 <body>
   <div class="formcontrol">
     <label for="input">Input SX Object</label>
-    <textarea id="input" autofocus></textarea>
+    <textarea id="input" aria-describedby="description" autofocus placeholder="Paste some CSS here"></textarea>
   </div>
 
   <div class="formcontrol">
     <label for="output">Output CSS Module</label>
     <output for="input" id="output"></output>
   </div>
+
+  <article id="description">
+    <p>This tool converts TypeScript objects from Primer <code>sx</code> props to plain CSS, ready for use in CSS
+      modules. The result will get you <em>most</em> of the way there, but some manual work will still be required for
+      complex cases.
+
+    <ul>
+      <li>Supported features
+
+        <ul>
+          <li>Converts camelCase rule names to kebab-case</li>
+          <li>Removes quotation marks around strings</li>
+          <li>Replaces shorthand property names with full CSS property names</li>
+          <li>Replaces theme keywords with Primer CSS variables</li>
+          <li>Converts nested objects to <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_nesting">CSS
+              Nesting</a></li>
+          <li>Converts responsive value arrays to nested <code>@media</code> queries</li>
+        </ul>
+      </li>
+
+      <li>Unsupported features
+
+        <ul>
+          <li>Complex syntax, including: object spreads, ternary expressions, and template literals</li>
+        </ul>
+      </li>
+    </ul>
+  </article>
 </body>
 
 </html>
