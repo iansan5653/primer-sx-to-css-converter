@@ -12,7 +12,7 @@
   },
   "scripts": {
     "build": "webpack",
-    "build-pages": "npm run build && rm -rf node_modules && rm -rf src",
+    "build-pages": "npm run build && mkdir pages && cp index.html pages/index.html && cp styles.css pages/styles.css && cp -r dist pages",
     "start": "concurrently \"webpack --watch\" \"live-server --ignore=src/**\""
   }
 }
