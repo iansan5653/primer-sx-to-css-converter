@@ -26,3 +26,4 @@ jobs:
         uses: iansan5653/publish-js-to-pages@1.0.1
         with:
           build_output_directory: pages
+          build_command: npm run build-pages
