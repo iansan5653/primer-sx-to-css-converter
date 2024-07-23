@@ -90,7 +90,7 @@ function replaceShorthands(
   // yeah this is horribly inefficient I know
   for (const [shorthand, variable] of Object.entries(variables))
     result = result.replaceAll(
-      RegExp(`(?:\s|^)${shorthand}(?:\s|$)`, "g"),
+      RegExp(`(?<=\\s|^)${shorthand}(?=\\s|$)`, "g"),
       `var(${variable})`
     );
 
