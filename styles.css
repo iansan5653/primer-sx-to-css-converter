@@ -16,4 +16,5 @@
 #output {
   border-color: gray;
   background-color: #eee;
+  white-space: pre;
 }

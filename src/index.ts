@@ -128,8 +128,8 @@ const fontSizeVariables: Partial<Record<string, string>> = {
 };
 
 const fontFamilyVariables: Partial<Record<string, string>> = {
-  normal: "var(--fontStack-system)",
-  mono: "var(--fontStack-monospace)",
+  normal: "--fontStack-system",
+  mono: "--fontStack-monospace",
 };
 
 const borderVariables: Partial<Record<string, string>> = {
@@ -154,7 +154,7 @@ function replaceShorthands(
   // yeah this is horribly inefficient I know
   for (const [shorthand, variable] of Object.entries(variables))
     result = result.replaceAll(
-      RegExp(`(?:\s|^)${shorthand}(?:\s|$)`),
+      RegExp(`(?:\s|^)${shorthand}(?:\s|$)`, 'g'),
       `var(${variable})`
     );
 
@@ -199,18 +199,38 @@ type CSSValue = string | CSSBlock;
 
 class CSSBlock {
   constructor(readonly expressions: CSSExpression[]) {}
+
+  toString() {
+    return `{
+${this.expressions.join("\n")}
+}`;
+  }
 }
 
 class CSSRule {
   constructor(readonly name: string, readonly value: CSSValue) {}
+
+  toString() {
+    return `${this.name}: ${this.value}${
+      typeof this.value === "string" ? ";" : ""
+    }`;
+  }
 }
 
 class CSSQuery {
   constructor(readonly expression: string, readonly rules: CSSBlock) {}
+
+  toString() {
+    return `${this.expression} ${this.rules}`;
+  }
 }
 
 class CSSComment {
   constructor(readonly value: string) {}
+
+  toString() {
+    return `${this.value}`;
+  }
 }
 
 type CSSExpression = CSSRule | CSSQuery | CSSComment;
@@ -284,15 +304,17 @@ inputElement.addEventListener("input", () => {
     ts.createSourceFile("input.ts", inputTs, ts.ScriptTarget.ESNext, true)
   );
 
-  const objectExpression =
-    sourceFile.children[0]?.children[0]?.children[0]?.children[1]?.sourceNode;
+  const objectWalker =
+    sourceFile.children[0]?.children[0]?.children[0]?.children[1];
+  objectWalker?.debug();
+
+  const objectExpression = objectWalker?.sourceNode;
 
   if (!objectExpression || !ts.isObjectLiteralExpression(objectExpression)) {
     outputElement.textContent = "Error: Input must be an object";
     return;
   }
-
-  outputElement.innerHTML = objectExpression.properties
-    .flatMap(propertyToCSSRules)
-    .join("<br />");
+  outputElement.innerHTML = new CSSBlock(
+    objectExpression.properties.flatMap(propertyToCSSRules)
+  ).toString();
 });
