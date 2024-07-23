@@ -154,7 +154,7 @@ function replaceShorthands(
   // yeah this is horribly inefficient I know
   for (const [shorthand, variable] of Object.entries(variables))
     result = result.replaceAll(
-      RegExp(`(?:\s|^)${shorthand}(?:\s|$)`, 'g'),
+      RegExp(`(?:\s|^)${shorthand}(?:\s|$)`, "g"),
       `var(${variable})`
     );
 
@@ -202,7 +202,7 @@ class CSSBlock {
 
   toString() {
     return `{
-${this.expressions.join("\n")}
+  ${this.expressions.flatMap((exp) => exp.toString().split("\n")).join("\n  ")}
 }`;
   }
 }
@@ -229,72 +229,84 @@ class CSSComment {
   constructor(readonly value: string) {}
 
   toString() {
-    return `${this.value}`;
+    return `/* ${this.value} */`;
   }
 }
 
 type CSSExpression = CSSRule | CSSQuery | CSSComment;
 
-function propertyToCSSRules(
+function* arrayToResponsiveCSS(
+  ruleName: string,
+  array: ts.ArrayLiteralExpression
+): Generator<CSSExpression> {
+  const responsiveValues = getArrayValues(array);
+  if (!responsiveValues) {
+    throw new Error(`Unsupported responsive array expression`);
+  }
+
+  for (const [index, responsiveValue] of responsiveValues.entries()) {
+    // Default first value is plain rule:
+    if (index === 0) yield new CSSRule(ruleName, responsiveValue);
+
+    const breakpoint = breakpointValues[index];
+    if (!breakpoint)
+      // we don't want to error here since we may already have yielded several rules
+      yield new CSSComment(
+        `Unknown breakpoint for "${responsiveValue}" in "${ruleName}" rule`
+      );
+
+    yield new CSSQuery(
+      `@media screen and (min-width: ${breakpoint})`,
+      new CSSBlock([new CSSRule(ruleName, responsiveValue)])
+    );
+  }
+}
+
+function* propertyToCSSRules(
   property: ts.ObjectLiteralElementLike
-): CSSExpression[] {
-  const name = getPropertyName(property);
-  if (!name)
-    return [
-      new CSSComment(
-        `Unsupported name expression for "${property.getFullText()}"`
-      ),
-    ];
+): Generator<CSSExpression> {
+  try {
+    const name = getPropertyName(property);
+    if (!name) throw new Error(`Unsupported name expression`);
 
-  const value = getPropertyValueExpression(property);
-  if (!value)
-    return [
-      new CSSComment(
-        `Unsupported value expression for "${property.getFullText()}"`
-      ),
-    ];
+    const value = getPropertyValueExpression(property);
+    if (!value) throw new Error(`Unsupported property expression`);
 
-  return transformPropertyName(name).flatMap((ruleName) => {
-    if (ts.isLiteralExpression(value)) {
-      return [
-        new CSSRule(ruleName, expandValueShorthands(ruleName, value.text)),
-      ];
-    } else if (ts.isObjectLiteralExpression(value)) {
-      return [
-        new CSSRule(
+    // One property can become multiple rules, ie in the case of `py`
+    for (const ruleName of transformPropertyName(name)) {
+      if (ts.isLiteralExpression(value)) {
+        // plain rule
+        yield new CSSRule(
           ruleName,
-          new CSSBlock(value.properties.flatMap(propertyToCSSRules))
-        ),
-      ];
-    } else if (ts.isArrayLiteralExpression(value)) {
-      const responsiveValues = getArrayValues(value);
-      if (!responsiveValues) {
-        return [
-          new CSSComment(
-            `Unsupported responsive value for "${property.getFullText()}"`
-          ),
-        ];
-      }
-
-      return responsiveValues.map((responsiveValue, index) => {
-        if (index === 0) return new CSSRule(ruleName, responsiveValue);
-        const breakpoint = breakpointValues[index];
-        if (!breakpoint)
-          return new CSSComment(`Missing breakpoint for "${responsiveValue}"`);
-
-        return new CSSQuery(
-          `@media screen and (min-width: ${breakpoint})`,
-          new CSSBlock([new CSSRule(ruleName, responsiveValue)])
+          expandValueShorthands(ruleName, value.text)
         );
-      });
+      } else if (ts.isObjectLiteralExpression(value)) {
+        // nested rule, ie ":hover"
+        yield new CSSRule(ruleName, objectToCSSBlock(value));
+      } else if (ts.isArrayLiteralExpression(value)) {
+        // responsive value, becomes nested at-rule
+        yield* arrayToResponsiveCSS(ruleName, value);
+      } else {
+        throw new Error(`Unsupported value expression`);
+      }
     }
+  } catch (e) {
+    yield new CSSComment(
+      `Unable to transform \`${property.getFullText()}\`: ${
+        (e as Error).message
+      }`
+    );
+  }
+}
 
-    return [
-      new CSSComment(
-        `Unsupported value expression for "${property.getFullText()}"`
-      ),
-    ];
-  });
+function* propertiesToCSSRules(
+  properties: ts.NodeArray<ts.ObjectLiteralElementLike>
+) {
+  for (const property of properties) yield* propertyToCSSRules(property);
+}
+
+function objectToCSSBlock(object: ts.ObjectLiteralExpression) {
+  return new CSSBlock(Array.from(propertiesToCSSRules(object.properties)));
 }
 
 inputElement.addEventListener("input", () => {
@@ -304,17 +316,12 @@ inputElement.addEventListener("input", () => {
     ts.createSourceFile("input.ts", inputTs, ts.ScriptTarget.ESNext, true)
   );
 
-  const objectWalker =
-    sourceFile.children[0]?.children[0]?.children[0]?.children[1];
-  objectWalker?.debug();
-
-  const objectExpression = objectWalker?.sourceNode;
+  const objectExpression =
+    sourceFile.children[0]?.children[0]?.children[0]?.children[1]?.sourceNode;
 
   if (!objectExpression || !ts.isObjectLiteralExpression(objectExpression)) {
     outputElement.textContent = "Error: Input must be an object";
     return;
   }
-  outputElement.innerHTML = new CSSBlock(
-    objectExpression.properties.flatMap(propertyToCSSRules)
-  ).toString();
+  outputElement.textContent = objectToCSSBlock(objectExpression).toString();
 });
