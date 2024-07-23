@@ -19,35 +19,46 @@ function transformPropertyName(name: string) {
 
 const breakpointValues = [, "544px", "768px", "1012px", "1280px"];
 
-function* arrayToResponsiveCSS(
+function responsiveValueToBreakpoint(
+  ruleName: string,
+  value: string,
+  index: number
+) {
+  // Default first value is plain rule:
+  if (index === 0) return new css.Rule(ruleName, value);
+
+  const breakpoint = breakpointValues[index];
+  if (!breakpoint)
+    throw new Error(
+      `Breakpoint out of bounds for "${value}" in "${ruleName}" rule`
+    );
+
+  return new css.Block(`@media screen and (min-width: ${breakpoint})`, [
+    new css.Rule(ruleName, value),
+  ]);
+}
+
+function arrayToResponsiveCSS(
   ruleName: string,
   array: ts.ArrayLiteralExpression
-): Generator<css.Expression> {
+) {
   const responsiveValues = tsUtils.getArrayValues(array);
-  if (!responsiveValues) {
+
+  if (!responsiveValues)
     throw new Error(`Unsupported responsive array expression`);
-  }
 
-  for (const [index, responsiveValue] of responsiveValues.entries()) {
-    // Default first value is plain rule:
-    if (index === 0) yield new css.Rule(ruleName, responsiveValue);
-
-    const breakpoint = breakpointValues[index];
-    if (!breakpoint)
-      // we don't want to error here since we may already have yielded several rules
-      yield new css.Comment(
-        `Unknown breakpoint for "${responsiveValue}" in "${ruleName}" rule`
-      );
-
-    yield new css.Block(`@media screen and (min-width: ${breakpoint})`, [
-      new css.Rule(ruleName, responsiveValue),
-    ]);
-  }
+  return responsiveValues.map((value, index) => {
+    try {
+      return responsiveValueToBreakpoint(ruleName, value, index);
+    } catch (e) {
+      return new css.Comment((e as Error).toString());
+    }
+  });
 }
 
 function* propertyToCSSRules(
   property: ts.ObjectLiteralElementLike
-): Generator<css.Expression> {
+): Generator<css.Expression, undefined, undefined> {
   try {
     const name = tsUtils.getPropertyName(property);
     if (!name) throw new Error(`Unsupported name expression`);
@@ -119,6 +130,6 @@ inputElement.addEventListener("input", () => {
   ).join("\n");
 });
 
-inputElement.addEventListener('focus', () => {
-  inputElement.select()
-})
+inputElement.addEventListener("focus", () => {
+  inputElement.select();
+});
