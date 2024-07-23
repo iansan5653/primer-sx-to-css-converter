@@ -78,8 +78,7 @@ const borderRadiusVariables: Partial<Record<string, string>> = {
   "1": "--borderRadius-small",
   "2": "--borderRadius-medium",
   "12px": "--borderRadius-large",
-  "50%": "--borderRadius-full",
-  "100%": "--borderRadius-full",
+  "3": "--borderRadius-full",
 };
 
 function replaceShorthands(
