@@ -95,7 +95,7 @@ inputElement.addEventListener("input", () => {
   const inputTs = `const _ = ${inputElement.value}`;
 
   const sourceFile = new tsUtils.ChildWalker(
-    ts.createSImproveourceFile("input.ts", inputTs, ts.ScriptTarget.ESNext, true)
+    ts.createSourceFile("input.ts", inputTs, ts.ScriptTarget.ESNext, true)
   );
 
   sourceFile.debug();
