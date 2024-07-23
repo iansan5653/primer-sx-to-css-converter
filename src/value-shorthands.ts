@@ -102,16 +102,16 @@ export function expandValueShorthands(name: string, value: string) {
   let result = replaceShorthands(value, colorVariables);
 
   if (name.startsWith("padding") || name.startsWith("margin"))
-    result = replaceShorthands(value, spacingVariables);
-  else if (name === "gap") result = replaceShorthands(value, gapVariables);
+    result = replaceShorthands(result, spacingVariables);
+  else if (name === "gap") result = replaceShorthands(result, gapVariables);
   else if (name === "font-size")
-    result = replaceShorthands(value, fontSizeVariables);
+    result = replaceShorthands(result, fontSizeVariables);
   else if (name === "font-family")
-    result = replaceShorthands(value, fontFamilyVariables);
+    result = replaceShorthands(result, fontFamilyVariables);
   else if (name.startsWith("border-radius"))
-    result = replaceShorthands(value, borderRadiusVariables);
+    result = replaceShorthands(result, borderRadiusVariables);
   else if (name.startsWith("border"))
-    result = replaceShorthands(value, borderVariables);
+    result = replaceShorthands(result, borderVariables);
 
   // if just a number that doesn't match a shorthand, fall back to px
   if (result.match(/^\d+$/) && result !== "0") result = `${result}px`;
