@@ -193,16 +193,20 @@ function getArrayValues(array: ts.ArrayLiteralExpression) {
   return values;
 }
 
-const breakpointValues = ["544px", "768px", "1012px", "1280px"];
+const breakpointValues = [, "544px", "768px", "1012px", "1280px"];
 
-type CSSValue = string | CSSExpression[];
+type CSSValue = string | CSSBlock;
+
+class CSSBlock {
+  constructor(readonly expressions: CSSExpression[]) {}
+}
 
 class CSSRule {
   constructor(readonly name: string, readonly value: CSSValue) {}
 }
 
 class CSSQuery {
-  constructor(readonly expression: string, readonly rules: CSSExpression[]) {}
+  constructor(readonly expression: string, readonly rules: CSSBlock) {}
 }
 
 class CSSComment {
@@ -230,19 +234,46 @@ function propertyToCSSRules(
       ),
     ];
 
-  return transformPropertyName(name).map((ruleName) => {
+  return transformPropertyName(name).flatMap((ruleName) => {
     if (ts.isLiteralExpression(value)) {
-      return new CSSRule(ruleName, expandValueShorthands(ruleName, value.text));
+      return [
+        new CSSRule(ruleName, expandValueShorthands(ruleName, value.text)),
+      ];
     } else if (ts.isObjectLiteralExpression(value)) {
-      return new CSSRule(
-        ruleName,
-        value.properties.flatMap(propertyToCSSRules)
-      );
+      return [
+        new CSSRule(
+          ruleName,
+          new CSSBlock(value.properties.flatMap(propertyToCSSRules))
+        ),
+      ];
+    } else if (ts.isArrayLiteralExpression(value)) {
+      const responsiveValues = getArrayValues(value);
+      if (!responsiveValues) {
+        return [
+          new CSSComment(
+            `Unsupported responsive value for "${property.getFullText()}"`
+          ),
+        ];
+      }
+
+      return responsiveValues.map((responsiveValue, index) => {
+        if (index === 0) return new CSSRule(ruleName, responsiveValue);
+        const breakpoint = breakpointValues[index];
+        if (!breakpoint)
+          return new CSSComment(`Missing breakpoint for "${responsiveValue}"`);
+
+        return new CSSQuery(
+          `@media screen and (min-width: ${breakpoint})`,
+          new CSSBlock([new CSSRule(ruleName, responsiveValue)])
+        );
+      });
     }
 
-    return new CSSComment(
-      `Unsupported value expression for "${property.getFullText()}"`
-    );
+    return [
+      new CSSComment(
+        `Unsupported value expression for "${property.getFullText()}"`
+      ),
+    ];
   });
 }
 
