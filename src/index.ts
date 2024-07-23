@@ -118,3 +118,7 @@ inputElement.addEventListener("input", () => {
     propertiesToCSSRules(objectExpression.properties)
   ).join("\n");
 });
+
+inputElement.addEventListener('focus', () => {
+  inputElement.select()
+})
