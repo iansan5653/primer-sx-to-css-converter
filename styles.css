@@ -5,7 +5,8 @@ body {
   gap: 1em;
 }
 
-label, legend {
+label,
+legend {
   font-weight: bold;
 }
 
@@ -32,4 +33,5 @@ label, legend {
   background-color: #eee;
   white-space: pre;
   overflow: auto;
+  user-select: all;
 }
