@@ -5,10 +5,18 @@ body {
   gap: 1em;
 }
 
+label, legend {
+  font-weight: bold;
+}
+
 .formcontrol {
   display: flex;
   flex-direction: column;
   gap: 0.5em;
+
+  &.horizontal {
+    flex-direction: row;
+  }
 }
 
 #input,

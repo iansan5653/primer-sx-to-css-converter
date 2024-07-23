@@ -7,6 +7,12 @@ import * as tsUtils from "./ts-utils";
 
 const inputElement = document.getElementById("input") as HTMLTextAreaElement;
 const outputElement = document.getElementById("output") as HTMLOutputElement;
+const autoSelectInputElement = document.getElementById(
+  "auto-select-input"
+) as HTMLInputElement;
+const autoCopyOutputElement = document.getElementById(
+  "auto-copy-output"
+) as HTMLInputElement;
 
 function kebabCase(name: string) {
   return name.replaceAll(/[A-Z]/g, (match) => `-${match.toLowerCase()}`);
@@ -110,4 +116,11 @@ inputElement.addEventListener("input", () => {
   outputElement.textContent = Array.from(
     propertiesToCSSRules(objectExpression.properties)
   ).join("\n");
+
+  if (autoCopyOutputElement.checked)
+    navigator.clipboard.writeText(outputElement.textContent);
+});
+
+inputElement.addEventListener("focus", () => {
+  if (autoSelectInputElement.checked) inputElement.select();
 });

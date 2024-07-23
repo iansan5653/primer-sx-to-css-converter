@@ -12,20 +12,38 @@
 </head>
 
 <body>
+  <h1>SX to CSS Converter</h1>
+    
   <div class="formcontrol">
     <label for="input">Input SX Object</label>
     <textarea id="input" aria-describedby="description" autofocus placeholder="Paste some CSS here"></textarea>
   </div>
 
   <div class="formcontrol">
-    <label for="output">Output CSS Module</label>
+    <label for="output">Output CSS</label>
     <output for="input" id="output"></output>
   </div>
 
+  <fieldset>
+    <legend>Settings</legend>
+
+    <div class="formcontrol horizontal">
+      <input type="checkbox" id="auto-select-input" checked />
+      <label for="auto-select-input">Auto-select input contents on focus</label>
+    </div>
+
+    <div class="formcontrol horizontal">
+      <input type="checkbox" id="auto-copy-output" />
+      <label for="auto-copy-output">Auto-copy output on change</label>
+    </div>
+  </fieldset>
+
   <article id="description">
-    <p>Converts TypeScript objects from Primer <code>sx</code> props to plain CSS, ready for use in CSS
-      modules. The result will get you <em>most</em> of the way there, but some manual work will still be required for
-      complex cases.
+    <h2>Instructions</h2>
+
+    <p>Paste TypeScript objects from Primer <code>sx</code> and get plain CSS, ready for use in CSS
+      modules. The result will get you <em>most</em> of the way there, but some manual work may still be required for
+      complex cases.</p>
 
     <ul>
       <li>Supported features
