@@ -1,0 +1,19 @@
+.formcontrol {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5em;
+  margin: 2em;
+}
+
+#input,
+#output {
+  height: 20em;
+  border: 1px solid;
+  font-family: monospace;
+  padding: 0.5em;
+}
+
+#output {
+  border-color: gray;
+  background-color: #eee;
+}
