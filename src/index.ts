@@ -3,42 +3,10 @@ import * as ts from "typescript";
 import {expandValueShorthands} from "./value-shorthands";
 import {nameShorthands} from "./name-shorthands";
 import * as css from "./css";
+import * as tsUtils from "./ts-utils";
 
 const inputElement = document.getElementById("input") as HTMLTextAreaElement;
 const outputElement = document.getElementById("output") as HTMLOutputElement;
-
-/** Wrapper around TS API. */
-class ChildWalker {
-  constructor(readonly sourceNode: ts.Node) {}
-
-  get children() {
-    const result: ChildWalker[] = [];
-
-    ts.forEachChild(this.sourceNode, (child) => {
-      result.push(new ChildWalker(child));
-    });
-
-    return result;
-  }
-
-  debug() {
-    const kind = ts.SyntaxKind[this.sourceNode.kind];
-    console.groupCollapsed(kind);
-    for (const child of this.children) child.debug();
-    console.groupEnd();
-  }
-}
-
-function getPropertyName({name}: ts.ObjectLiteralElementLike) {
-  if (name && (ts.isLiteralExpression(name) || ts.isIdentifier(name)))
-    return name.text;
-  return null;
-}
-
-function getPropertyValueExpression(property: ts.ObjectLiteralElementLike) {
-  if (!ts.isPropertyAssignment(property)) return null;
-  return property.initializer;
-}
 
 function kebabCase(name: string) {
   return name.replaceAll(/[A-Z]/g, (match) => `-${match.toLowerCase()}`);
@@ -49,23 +17,13 @@ function transformPropertyName(name: string) {
   return nameShorthands[kebab] ?? [kebab];
 }
 
-function getArrayValues(array: ts.ArrayLiteralExpression) {
-  const values = [];
-
-  for (const element of array.elements)
-    if (ts.isLiteralExpression(element)) values.push(element.text);
-    else return null;
-
-  return values;
-}
-
 const breakpointValues = [, "544px", "768px", "1012px", "1280px"];
 
 function* arrayToResponsiveCSS(
   ruleName: string,
   array: ts.ArrayLiteralExpression
 ): Generator<css.Expression> {
-  const responsiveValues = getArrayValues(array);
+  const responsiveValues = tsUtils.getArrayValues(array);
   if (!responsiveValues) {
     throw new Error(`Unsupported responsive array expression`);
   }
@@ -91,10 +49,10 @@ function* propertyToCSSRules(
   property: ts.ObjectLiteralElementLike
 ): Generator<css.Expression> {
   try {
-    const name = getPropertyName(property);
+    const name = tsUtils.getPropertyName(property);
     if (!name) throw new Error(`Unsupported name expression`);
 
-    const value = getPropertyValueExpression(property);
+    const value = tsUtils.getPropertyValueExpression(property);
     if (!value) throw new Error(`Unsupported property expression`);
 
     // One property can become multiple rules, ie in the case of `py`
@@ -134,9 +92,9 @@ function* propertiesToCSSRules(
 }
 
 inputElement.addEventListener("input", () => {
-  const inputTs = `const x = ${inputElement.value}`;
+  const inputTs = `const _ = ${inputElement.value}`;
 
-  const sourceFile = new ChildWalker(
+  const sourceFile = new tsUtils.ChildWalker(
     ts.createSourceFile("input.ts", inputTs, ts.ScriptTarget.ESNext, true)
   );
 
