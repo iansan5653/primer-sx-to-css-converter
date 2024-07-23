@@ -95,8 +95,10 @@ inputElement.addEventListener("input", () => {
   const inputTs = `const _ = ${inputElement.value}`;
 
   const sourceFile = new tsUtils.ChildWalker(
-    ts.createSourceFile("input.ts", inputTs, ts.ScriptTarget.ESNext, true)
+    ts.createSImproveourceFile("input.ts", inputTs, ts.ScriptTarget.ESNext, true)
   );
+
+  sourceFile.debug();
 
   const objectExpression =
     sourceFile.children[0]?.children[0]?.children[0]?.children[1]?.sourceNode;

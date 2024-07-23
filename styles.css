@@ -1,8 +1,14 @@
+body {
+  padding: 2em;
+  display: flex;
+  flex-direction: column;
+  gap: 1em;
+}
+
 .formcontrol {
   display: flex;
   flex-direction: column;
   gap: 0.5em;
-  margin: 2em;
 }
 
 #input,
