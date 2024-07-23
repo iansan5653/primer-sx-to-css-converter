@@ -92,7 +92,14 @@ function* propertiesToCSSRules(
 }
 
 inputElement.addEventListener("input", () => {
-  const inputTs = `const _ = ${inputElement.value}`;
+  let input = inputElement.value;
+
+  // auto wrap in braces if the user pasted part of an object
+  const trimmed = input.trim();
+  const hasBraces = trimmed.startsWith("{") || trimmed.endsWith("}");
+  if (!hasBraces) input = `{${input}}`;
+
+  const inputTs = `const _ = ${input}`;
 
   const sourceFile = new tsUtils.ChildWalker(
     ts.createSourceFile("input.ts", inputTs, ts.ScriptTarget.ESNext, true)
