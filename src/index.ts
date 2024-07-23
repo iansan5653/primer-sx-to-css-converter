@@ -67,26 +67,20 @@ function* propertyToCSSRules(
     if (!value) throw new Error(`Unsupported property expression`);
 
     // One property can become multiple rules, ie in the case of `py`
-    for (const ruleName of transformPropertyName(name)) {
-      if (ts.isLiteralExpression(value)) {
-        // plain rule
+    for (const ruleName of transformPropertyName(name))
+      if (ts.isLiteralExpression(value))
         yield new css.Rule(
           ruleName,
           expandValueShorthands(ruleName, value.text)
         );
-      } else if (ts.isObjectLiteralExpression(value)) {
-        // nested rule, ie ":hover"
+      else if (ts.isObjectLiteralExpression(value))
         yield new css.Block(
           ruleName,
           Array.from(propertiesToCSSRules(value.properties))
         );
-      } else if (ts.isArrayLiteralExpression(value)) {
-        // responsive value, becomes nested at-rule
+      else if (ts.isArrayLiteralExpression(value))
         yield* arrayToResponsiveCSS(ruleName, value);
-      } else {
-        throw new Error(`Unsupported value expression`);
-      }
-    }
+      else throw new Error(`Unsupported value expression`);
   } catch (e) {
     yield new css.Comment(
       `Unable to transform \`${property.getFullText()}\`: ${
