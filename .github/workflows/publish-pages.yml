@@ -1,0 +1,26 @@
+name: Deploy Pages site
+
+on:
+  push:
+    branches: main
+
+# Important! You must grant the required permission for the action to be able to deploy
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Prevents conflicting deploys when several merges happen quickly
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - id: deployment # Add an ID to the step so we can get the URL on completion
+        uses: iansan5653/publish-js-to-pages@1.0.1
