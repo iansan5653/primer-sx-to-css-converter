@@ -20,7 +20,7 @@
     "start": "concurrently \"webpack --watch\" \"live-server --ignore=src/**\""
   },
   "displayName": "sx-to-css",
-  "publisher": "iansan5653",
+  "publisher": "ian-sanders",
   "engines": {
     "vscode": "^1.22.0"
   },
