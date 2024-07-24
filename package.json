@@ -29,8 +29,12 @@
   "contributes": {
     "commands": [
       {
-        "command": "sxToCss.convertSx",
-        "title": "Convert sx object to CSS"
+        "command": "sxToCss.convertSxToClipboard",
+        "title": "Convert sx to CSS and copy to clipboard"
+      },
+      {
+        "command": "sxToCss.convertSxToModule",
+        "title": "Convert sx to CSS and copy to module file"
       }
     ]
   }
