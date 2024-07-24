@@ -30,11 +30,48 @@
     "commands": [
       {
         "command": "sxToCss.convertSxToClipboard",
-        "title": "Convert sx to CSS and copy to clipboard"
+        "title": "Convert object to CSS and copy to clipboard",
+        "shortTitle": "Convert and copy to clipboard",
+        "enablement": "editorLangId =~ /(typescript|javascript)/ && editorHasSelection"
       },
       {
         "command": "sxToCss.convertSxToModule",
-        "title": "Convert sx to CSS and copy to module file"
+        "title": "Convert object to CSS and copy to module file",
+        "shortTitle": "Convert and copy to module",
+        "enablement": "editorLangId =~ /(typescript|javascript)/ && editorHasSelection"
+      }
+    ],
+    "menus": {
+      "commandPalette": [
+        {
+          "command": "sxToCss.convertSxToClipboard",
+          "when": "editorLangId =~ /(typescript|javascript)/"
+        },
+        {
+          "command": "sxToCss.convertSxToModule",
+          "when": "editorLangId =~ /(typescript|javascript)/"
+        }
+      ],
+      "editor/context": [
+        {
+          "submenu": "sxToCss.convert",
+          "group": "1_modification",
+          "when": "editorLangId =~ /(typescript|javascript)/ && editorHasSelection"
+        }
+      ],
+      "sxToCss.convert": [
+        {
+          "command": "sxToCss.convertSxToClipboard"
+        },
+        {
+          "command": "sxToCss.convertSxToModule"
+        }
+      ]
+    },
+    "submenus": [
+      {
+        "id": "sxToCss.convert",
+        "label": "Convert selection to CSS"
       }
     ]
   }
