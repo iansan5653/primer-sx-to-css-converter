@@ -39,8 +39,6 @@ const convertAndMoveToModule = async () => {
     `${sourceFilePath.dir}/${sourceFilePath.name}.module.css`
   );
 
-  const edit = new vscode.WorkspaceEdit();
-
   let insertionPosition: vscode.Position;
   let prependNewlineCount: number;
   try {
@@ -49,31 +47,24 @@ const convertAndMoveToModule = async () => {
     insertionPosition = lastLineRange.end;
     prependNewlineCount = document.getText().endsWith("\n") ? 1 : 2;
   } catch (e) {
+    const edit = new vscode.WorkspaceEdit();
     prependNewlineCount = 0;
     edit.createFile(targetFileUri, {ignoreIfExists: true});
     insertionPosition = new vscode.Position(0, 0);
+    await vscode.workspace.applyEdit(edit);
   }
 
-  const css = `${"\n".repeat(prependNewlineCount)}.className {
+  const snippet = new vscode.SnippetString(`\${1:${"\n".repeat(
+    prependNewlineCount
+  )}.\${2:className} {
   ${Array.from(properties).join("\n  ")}
-}
-`;
-
-  edit.insert(targetFileUri, insertionPosition, css);
-
-  await vscode.workspace.applyEdit(edit);
+\\}
+}`);
 
   const document = await vscode.workspace.openTextDocument(targetFileUri);
-  const endOfDocumentPosition = document.lineAt(document.lineCount - 1).range
-    .end;
-
   const newEditor = await vscode.window.showTextDocument(document);
 
-  const newSelection = new vscode.Selection(
-    insertionPosition,
-    endOfDocumentPosition
-  );
-  newEditor.selection = newSelection;
+  newEditor.insertSnippet(snippet, insertionPosition);
 };
 
 export function activate(context: vscode.ExtensionContext) {
