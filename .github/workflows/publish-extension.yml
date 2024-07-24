@@ -16,6 +16,6 @@ jobs:
       - run: npm ci
       - run: npm run build-extension
       - name: Publish
-        run: npm run publish-extension -- ${{ github.event.release.tag_name }}
+        run: npm run publish-extension -- --no-git-tag-version ${{ github.event.release.tag_name }}
         env:
           VSCE_PAT: ${{ secrets.PUBLISH_VSCODE_EXTENSION }}
