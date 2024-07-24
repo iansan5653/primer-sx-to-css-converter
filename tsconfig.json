@@ -30,6 +30,7 @@
     "outDir": "dist"
   },
   "files": [
-    "src/index.ts"
+    "src/web-ui.ts",
+    "src/vscode-extension.ts"
   ]
 }

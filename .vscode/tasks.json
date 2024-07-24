@@ -1,0 +1,26 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "npm",
+			"script": "build-extension",
+			"problemMatcher": [],
+			"label": "npm: build-extension",
+			"detail": "build-extension",
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			}
+		},
+		{
+			"type": "npm",
+			"script": "build-pages",
+			"problemMatcher": [],
+			"label": "npm: build-pages",
+			"detail": "build-pages",
+			"group": {
+				"kind": "build"
+			}
+		}
+	]
+}
