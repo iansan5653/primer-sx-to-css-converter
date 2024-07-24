@@ -3,13 +3,23 @@
 	"tasks": [
 		{
 			"type": "npm",
-			"script": "tsc",
+			"script": "build-extension",
 			"problemMatcher": [],
-			"label": "npm: tsc",
-			"detail": "tsc",
+			"label": "npm: build-extension",
+			"detail": "build-extension",
 			"group": {
 				"kind": "build",
 				"isDefault": true
+			}
+		},
+		{
+			"type": "npm",
+			"script": "build-pages",
+			"problemMatcher": [],
+			"label": "npm: build-pages",
+			"detail": "build-pages",
+			"group": {
+				"kind": "build"
 			}
 		}
 	]
