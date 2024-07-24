@@ -1,7 +1,9 @@
 {
+  "name": "primer-sx-to-css-modules-converter",
   "private": true,
   "dependencies": {
-    "typescript": "^5.5.4"
+    "typescript": "^5.5.4",
+    "vscode": "^1.1.37"
   },
   "devDependencies": {
     "concurrently": "8.2.2",
@@ -11,8 +13,25 @@
     "webpack-cli": "^5.1.4"
   },
   "scripts": {
+    "tsc": "tsc",
     "build": "webpack",
     "build-pages": "npm run build && mkdir pages && cp index.html pages/index.html && cp styles.css pages/styles.css && cp -r dist pages",
     "start": "concurrently \"webpack --watch\" \"live-server --ignore=src/**\""
+  },
+  "displayName": "sx-to-css",
+  "publisher": "iansan5653",
+  "engines": {
+    "vscode": "^1.22.0"
+  },
+  "version": "0.0.1",
+  "main": "dist/vscode-extension.js",
+  "activationEvents": [],
+  "contributes": {
+    "commands": [
+      {
+        "command": "sxToCss.convertSx",
+        "title": "Convert sx object to CSS"
+      }
+    ]
   }
 }
