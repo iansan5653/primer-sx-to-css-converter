@@ -1,5 +1,4 @@
 import * as vscode from "vscode";
-import * as path from "path";
 
 import {convert} from "./convert";
 
@@ -24,14 +23,22 @@ const convertAndCopyToClipboard = async () => {
   vscode.window.showInformationMessage("Copied CSS to clipboard");
 };
 
+function parsePath(path: string) {
+  const pathParts = path.split("/");
+  const dir = pathParts.slice(0, -1).join("/");
+  const filename = pathParts.at(-1) ?? "";
+  const nameParts = filename.split(".");
+  const name = nameParts[0] ?? "";
+  const extensions = nameParts.slice(1).join(".");
+  return {dir, filename, name, extensions};
+}
+
 const convertAndMoveToModule = async () => {
   const properties = convertCurrentSelection();
 
   const editor = vscode.window.activeTextEditor;
 
-  const sourceFilePath = editor?.document.fileName
-    ? path.parse(editor?.document.fileName)
-    : undefined;
+  const sourceFilePath = parsePath(editor?.document.fileName ?? "");
   if (!sourceFilePath)
     throw new Error("Cannot locate module file without an origin document");
 

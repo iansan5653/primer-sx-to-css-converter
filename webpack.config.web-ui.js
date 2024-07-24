@@ -2,7 +2,7 @@ const path = require("path");
 
 module.exports = {
   entry: "./src/web-ui.ts",
-  mode: 'development',
+  mode: "development",
   module: {
     rules: [
       {

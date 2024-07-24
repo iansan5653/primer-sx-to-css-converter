@@ -15,9 +15,9 @@
   },
   "scripts": {
     "publish-extension": "vsce publish",
-    "build-extension": "tsc",
-    "build-pages": "webpack && mkdir pages && cp index.html pages/index.html && cp styles.css pages/styles.css && cp -r dist pages",
-    "start": "concurrently \"webpack --watch\" \"live-server --ignore=src/**\""
+    "build-extension": "webpack --config ./webpack.config.vscode-extension.js",
+    "build-pages": "webpack --config ./webpack.config.web-ui.js && mkdir pages && cp index.html pages/index.html && cp styles.css pages/styles.css && cp -r dist pages",
+    "start": "concurrently \"webpack --config ./webpack.config.web-ui.js --watch\" \"live-server --ignore=src/**\""
   },
   "displayName": "Primer SX to CSS Module Converter",
   "publisher": "ian-sanders",
@@ -25,7 +25,13 @@
     "vscode": "^1.22.0"
   },
   "version": "0.0.1",
-  "main": "dist/vscode-extension.js",
+  "main": "dist/vscode-extension.bundle.js",
+  "files": [
+    "dist/vscode-extension.bundle.js",
+    "package.json",
+    "readme.md",
+    "license.md"
+  ],
   "activationEvents": [],
   "contributes": {
     "commands": [
