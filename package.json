@@ -2,8 +2,7 @@
   "name": "primer-sx-to-css-modules-converter",
   "private": true,
   "dependencies": {
-    "typescript": "5.5.4",
-    "vscode": "1.1.37"
+    "typescript": "5.5.4"
   },
   "devDependencies": {
     "concurrently": "8.2.2",
@@ -11,7 +10,8 @@
     "ts-loader": "9.5.1",
     "webpack": "5.93.0",
     "webpack-cli": "5.1.4",
-    "@vscode/vsce": "2.31.1"
+    "@vscode/vsce": "2.31.1",
+    "vscode": "1.1.37"
   },
   "scripts": {
     "publish-extension": "vsce publish",
