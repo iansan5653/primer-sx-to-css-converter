@@ -1,5 +1,6 @@
 {
   "name": "sx-to-css",
+  "repository": "https://github.com/iansan5653/primer-sx-to-css-converter/",
   "private": true,
   "dependencies": {
     "typescript": "5.5.4"
