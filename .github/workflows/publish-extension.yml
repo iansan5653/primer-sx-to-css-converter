@@ -16,7 +16,6 @@ jobs:
       - run: npm ci
       - run: npm run build-extension
       - name: Publish
-        if: startsWith(github.ref, 'refs/tags/')
-        run: npm run publish-extension
+        run: npm run publish-extension -- ${{ github.event.release.tag_name }}
         env:
           VSCE_PAT: ${{ secrets.PUBLISH_VSCODE_EXTENSION }}
