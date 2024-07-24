@@ -5,9 +5,6 @@ import {nameShorthands} from "./name-shorthands";
 import * as css from "./css";
 import * as tsUtils from "./ts-utils";
 
-const inputElement = document.getElementById("input") as HTMLTextAreaElement;
-const outputElement = document.getElementById("output") as HTMLOutputElement;
-
 function kebabCase(name: string) {
   return name.replaceAll(/[A-Z]/g, (match) => `-${match.toLowerCase()}`);
 }
@@ -96,15 +93,12 @@ function* propertiesToCSSRules(
   for (const property of properties) yield* propertyToCSSRules(property);
 }
 
-inputElement.addEventListener("input", () => {
-  let input = inputElement.value;
-
+export function convert(input: string) {
   // auto wrap in braces if the user pasted part of an object
   const trimmed = input.trim();
   const hasBraces = trimmed.startsWith("{") || trimmed.endsWith("}");
-  if (!hasBraces) input = `{${input}}`;
 
-  const inputTs = `const _ = ${input}`;
+  const inputTs = `const _ = ${hasBraces ? input : `{${input}}`}`;
 
   const sourceFile = new tsUtils.ChildWalker(
     ts.createSourceFile("input.ts", inputTs, ts.ScriptTarget.ESNext, true)
@@ -116,14 +110,8 @@ inputElement.addEventListener("input", () => {
     sourceFile.children[0]?.children[0]?.children[0]?.children[1]?.sourceNode;
 
   if (!objectExpression || !ts.isObjectLiteralExpression(objectExpression)) {
-    outputElement.textContent = "Error: Input must be an object";
-    return;
+    throw new Error("Error: Input must be an object");
   }
-  outputElement.textContent = Array.from(
-    propertiesToCSSRules(objectExpression.properties)
-  ).join("\n");
-});
 
-inputElement.addEventListener("focus", () => {
-  inputElement.select();
-});
+  return propertiesToCSSRules(objectExpression.properties);
+}
