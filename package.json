@@ -1,5 +1,5 @@
 {
-  "name": "primer-sx-to-css-modules-converter",
+  "name": "sx-to-css",
   "private": true,
   "dependencies": {
     "typescript": "5.5.4"
@@ -19,7 +19,7 @@
     "build-pages": "webpack && mkdir pages && cp index.html pages/index.html && cp styles.css pages/styles.css && cp -r dist pages",
     "start": "concurrently \"webpack --watch\" \"live-server --ignore=src/**\""
   },
-  "displayName": "sx-to-css",
+  "displayName": "Primer SX to CSS Module Converter",
   "publisher": "ian-sanders",
   "engines": {
     "vscode": "^1.22.0"
