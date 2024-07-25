@@ -21,6 +21,8 @@ function responsiveValueToBreakpoint(
   value: string,
   index: number
 ) {
+  value = expandValueShorthands(ruleName, value);
+
   // Default first value is plain rule:
   if (index === 0) return new css.Rule(ruleName, value);
 
