@@ -6,7 +6,7 @@ const outputElement = document.getElementById("output") as HTMLOutputElement;
 inputElement.addEventListener("input", () => {
   try {
     const cssProperties = convert(inputElement.value);
-    outputElement.textContent = Array.from(cssProperties).join("\n");
+    outputElement.textContent = cssProperties.join("\n");
   } catch (e) {
     outputElement.textContent = (e as Error).toString();
   }

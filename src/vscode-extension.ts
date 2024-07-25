@@ -18,7 +18,7 @@ const convertCurrentSelection = () => {
 
 const convertAndCopyToClipboard = async () => {
   const properties = convertCurrentSelection();
-  const css = Array.from(properties).join("\n");
+  const css = properties.join("\n");
   await vscode.env.clipboard.writeText(css);
   vscode.window.showInformationMessage("Copied CSS to clipboard");
 };
@@ -64,7 +64,7 @@ const convertAndMoveToModule = async () => {
   const snippet = new vscode.SnippetString(`\${1:${"\n".repeat(
     prependNewlineCount
   )}.\${2:className} {
-  ${Array.from(properties).join("\n  ")}
+  ${properties.join("\n  ")}
 \\}
 }`);
 

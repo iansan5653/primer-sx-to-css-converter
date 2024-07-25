@@ -87,10 +87,33 @@ function* propertyToCSSRules(
   }
 }
 
-function* propertiesToCSSRules(
+function propertiesToCSSRules(
   properties: ts.NodeArray<ts.ObjectLiteralElementLike>
 ) {
-  for (const property of properties) yield* propertyToCSSRules(property);
+  return properties.flatMap((property) =>
+    Array.from(propertyToCSSRules(property))
+  );
+}
+
+function mergeLikeBlocks(expressions: css.Expression[]): css.Expression[] {
+  const nonBlocks: (css.Rule | css.Comment)[] = [];
+  const mergedBlocksByName = new Map<string, css.Expression[]>();
+
+  for (const expression of expressions)
+    if (expression instanceof css.Block)
+      mergedBlocksByName.set(
+        expression.name,
+        (mergedBlocksByName.get(expression.name) ?? []).concat(
+          expression.expressions
+        )
+      );
+    else nonBlocks.push(expression);
+
+  const blocks: css.Block[] = Array.from(mergedBlocksByName.entries()).map(
+    ([name, exps]) => new css.Block(name, mergeLikeBlocks(exps))
+  );
+
+  return [...nonBlocks, ...blocks];
 }
 
 export function convert(input: string) {
@@ -113,5 +136,5 @@ export function convert(input: string) {
     throw new Error("Error: Input must be an object");
   }
 
-  return propertiesToCSSRules(objectExpression.properties);
+  return mergeLikeBlocks(propertiesToCSSRules(objectExpression.properties));
 }
