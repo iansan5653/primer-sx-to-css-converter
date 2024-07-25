@@ -21,8 +21,6 @@ function responsiveValueToBreakpoint(
   value: string,
   index: number
 ) {
-  value = expandValueShorthands(ruleName, value);
-
   // Default first value is plain rule:
   if (index === 0) return new css.Rule(ruleName, value);
 
@@ -48,7 +46,11 @@ function arrayToResponsiveCSS(
 
   return responsiveValues.map((value, index) => {
     try {
-      return responsiveValueToBreakpoint(ruleName, value, index);
+      return responsiveValueToBreakpoint(
+        ruleName,
+        expandValueShorthands(ruleName, value),
+        index
+      );
     } catch (e) {
       return new css.Comment((e as Error).toString());
     }
