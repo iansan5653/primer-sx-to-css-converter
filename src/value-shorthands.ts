@@ -99,7 +99,7 @@ function replaceShorthands(
 const plainNumericProperties = new Set([
   "font-weight",
   "flex-grow",
-  "flex-shrink",
+  "flex-shrink"
 ]);
 
 export function expandValueShorthands(name: string, value: string) {
@@ -118,8 +118,13 @@ export function expandValueShorthands(name: string, value: string) {
   else if (name.startsWith("border"))
     result = replaceShorthands(result, borderVariables);
 
-  // if just a number that doesn't match a shorthand, fall back to px
-  if (!name.startsWith("--") && !plainNumericProperties.has(name))
+  // if just a number that doesn't match a shorthand, fall back to px (except for custom properties or font-weight)
+  if (
+    !name.startsWith("--") &&
+    !plainNumericProperties.has(name) &&
+    result.match(/^\d+$/) &&
+    result !== "0"
+  )
     result = `${result}px`;
 
   return result;
