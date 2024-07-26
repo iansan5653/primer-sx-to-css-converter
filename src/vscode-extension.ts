@@ -64,7 +64,7 @@ const convertAndMoveToModule = async () => {
   const snippet = new vscode.SnippetString(`\${1:${"\n".repeat(
     prependNewlineCount
   )}.\${2:className} {
-  ${properties.join("\n  ")}
+  ${properties.join("\n  ").replaceAll("\\", "\\\\").replaceAll("}", "\\}")}
 \\}
 }`);
 
