@@ -14,6 +14,10 @@ function transformPropertyName(name: string) {
   return nameShorthands[kebab] ?? [kebab];
 }
 
+function transformBlockName(name: string) {
+  return name.startsWith(":") ? `&${name}` : name;
+}
+
 const breakpointValues = [, "544px", "768px", "1012px", "1280px"];
 
 function responsiveValueToBreakpoint(
@@ -76,8 +80,8 @@ function* propertyToCSSRules(
         );
       else if (ts.isObjectLiteralExpression(value))
         yield new css.Block(
-          ruleName,
-          Array.from(propertiesToCSSRules(value.properties))
+          transformBlockName(ruleName),
+          propertiesToCSSRules(value.properties)
         );
       else if (ts.isArrayLiteralExpression(value))
         yield* arrayToResponsiveCSS(ruleName, value);
