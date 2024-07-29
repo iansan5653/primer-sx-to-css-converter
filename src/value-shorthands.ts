@@ -32,6 +32,10 @@ const colorVariables: Partial<Record<string, string>> = {
   "border.default": "--borderColor-default",
   "border.muted": "--borderColor-muted",
   "border.subtle": "--borderColor-muted",
+  "neutral.emphasisPlus": "--bgColor-emphasis",
+  "neutral.emphasis": "--bgColor-neutral-emphasis",
+  "neutral.muted": "--bgColor-neutral-muted",
+  "neutral.subtle": "--bgColor-neutral-muted"
 };
 
 for (const colorGroup of [

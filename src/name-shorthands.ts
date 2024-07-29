@@ -13,4 +13,5 @@ export const nameShorthands: Partial<Record<string, string[]>> = {
   mb: ["margin-bottom"],
   mx: ["margin-left", "margin-right"],
   my: ["margin-top", "margin-bottom"],
+  bg: ["background"]
 };
