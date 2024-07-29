@@ -35,7 +35,7 @@ const colorVariables: Partial<Record<string, string>> = {
   "neutral.emphasisPlus": "--bgColor-emphasis",
   "neutral.emphasis": "--bgColor-neutral-emphasis",
   "neutral.muted": "--bgColor-neutral-muted",
-  "neutral.subtle": "--bgColor-neutral-muted"
+  "neutral.subtle": "--bgColor-neutral-muted",
 };
 
 for (const colorGroup of [
@@ -103,7 +103,8 @@ function replaceShorthands(
 const plainNumericProperties = new Set([
   "font-weight",
   "flex-grow",
-  "flex-shrink"
+  "flex-shrink",
+  "flex",
 ]);
 
 export function expandValueShorthands(name: string, value: string) {
