@@ -34,6 +34,7 @@
     "license.md"
   ],
   "activationEvents": [],
+  "extensionKind": ["workspace"],
   "contributes": {
     "commands": [
       {
