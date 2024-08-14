@@ -1,6 +1,7 @@
 import * as vscode from "vscode";
 
 import {convert} from "./convert";
+import {buildCssModuleFileName} from "./css-modules";
 
 const convertCurrentSelection = () => {
   const editor = vscode.window.activeTextEditor;
@@ -23,28 +24,16 @@ const convertAndCopyToClipboard = async () => {
   vscode.window.showInformationMessage("Copied CSS to clipboard");
 };
 
-function parsePath(path: string) {
-  const pathParts = path.split("/");
-  const dir = pathParts.slice(0, -1).join("/");
-  const filename = pathParts.at(-1) ?? "";
-  const nameParts = filename.split(".");
-  const name = nameParts[0] ?? "";
-  const extensions = nameParts.slice(1).join(".");
-  return {dir, filename, name, extensions};
-}
-
 const convertAndMoveToModule = async () => {
   const properties = convertCurrentSelection();
 
   const editor = vscode.window.activeTextEditor;
 
-  const sourceFilePath = parsePath(editor?.document.fileName ?? "");
+  const sourceFilePath = editor?.document.fileName ?? "";
   if (!sourceFilePath)
     throw new Error("Cannot locate module file without an origin document");
 
-  const targetFileUri = vscode.Uri.file(
-    `${sourceFilePath.dir}/${sourceFilePath.name}.module.css`
-  );
+  const targetFileUri = vscode.Uri.file(buildCssModuleFileName(sourceFilePath));
 
   let insertionPosition: vscode.Position;
   let prependNewlineCount: number;
